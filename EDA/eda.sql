@@ -54,3 +54,35 @@ select
 from gold.dim_products
 group by category
 order by total_products desc
+
+-- what is the average costs in each category?
+
+select 
+	category,
+	avg(cost) as avg_cost
+from gold.dim_products
+group by category
+order by avg_cost desc
+
+-- what is the total revenue generated for each categor
+
+select 
+	ds.category,
+	sum(fs.sales_amount) as total_revenue
+from gold.fact_sales as fs
+left join gold.dim_products as ds
+on ds.product_key = fs.product_key
+group by category
+order by total_revenue desc
+
+-- what is the total revenue by each customer
+select 
+	dc.customer_number,
+	dc.first_name,
+	dc.lastname,
+	sum(fs.sales_amount) as total_revenue
+from gold.fact_sales as fs
+left join gold.dim_customers as dc
+on fs.customer_key = dc.customer_key
+group by dc.customer_number, dc.first_name, dc.lastname
+order by total_revenue desc
