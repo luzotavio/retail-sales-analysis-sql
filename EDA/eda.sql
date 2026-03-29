@@ -1,14 +1,3 @@
--- explore all countries our customers como from.
-
-select distinct category , count( distinct subcategory) from gold.dim_products group by category order by 2 desc
-
-select 
-	min(order_date) as first_order_date,
-	max(order_date) as last_order_date,
-	DATEDIFF(year,min(order_date), max(order_date)) as order_range_years
-from gold.fact_sales
-
-
 -- find the total number of customers that has placed an order
 
 select 
@@ -86,3 +75,35 @@ left join gold.dim_customers as dc
 on fs.customer_key = dc.customer_key
 group by dc.customer_number, dc.first_name, dc.lastname
 order by total_revenue desc
+
+-- what is the distribution of itemns sold across countries
+
+select 
+	dc.country,
+	sum(fs.quantity) as total_quantity
+from gold.fact_sales as fs
+left join gold.dim_customers as dc
+on fs.customer_key = dc.customer_key
+group by dc.country
+order by total_quantity desc
+
+--  Wich 5 products generate the highest revenue?
+
+select top 5
+	p.product_name,
+	sum(f.sales_amount) total_revenue
+from gold.fact_sales f
+left join gold.dim_products p
+on p.product_key = f.product_key
+group by p.product_name
+order by total_revenue desc
+
+--  what are the 5 worst performing products in terms of sales?
+select top 5
+	p.product_name,
+	sum(f.sales_amount) total_revenue
+from gold.fact_sales f
+left join gold.dim_products p
+on p.product_key = f.product_key
+group by p.product_name
+order by total_revenue 
